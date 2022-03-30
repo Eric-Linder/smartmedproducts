@@ -1,0 +1,114 @@
+
+===================================================================================
+
+"Primary Care" (term_id: 1491) 
+This term is associated with this product	
+"I-Gel Supraglottic Airway, Resus Pack, Disposable" (ID: 30611)
+
+
+
+wp_posts
+-----------
+ID: 30611
+post_title: I-Gel Supraglottic Airway, Resus Pack, Disposable
+post_name: i-gel-supraglottic-airway-resus-pack-disposable
+
+
+
+wp_postmeta
+-------------
+meta_id: 
+post_id: 30611
+
+
+wp_term_relationships
+-----------------------
+object_id: 30611
+term_taxonomy_id: 1055 (Medline)
+term_taxonomy_id: 1138 (Large)
+term_taxonomy_id: 1139 (Medium)
+term_taxonomy_id: 1140 (Small)
+term_taxonomy_id: 1143 (Each)
+term_taxonomy_id: 1144 (variable)
+term_taxonomy_id: 1168 (EMS)
+term_taxonomy_id: 1170 (6/Case)
+
+
+===================================================================================
+
+wp_posts
+---------------
+ID: 31998
+post_title: Brewer_Assist-Power-Procedure-Saddle-25
+post_name: brewer_assist-power-procedure-saddle-25
+post_parent: 31955
+
+
+wp_term_relationships
+-----------------------
+object_id: 31955
+term_taxonomy_id: 216 (product_tag)
+term_taxonomy_id: 1144 (product_type)
+term_taxonomy_id: 1172 (product_cat)
+term_taxonomy_id: 1240 (product_cat)
+term_taxonomy_id: 1302 (pwb-brand)
+term_taxonomy_id: 1491 (product_cat)
+term_taxonomy_id: 1516 (pa_color)
+term_taxonomy_id: 1517 (pa_color)
+term_taxonomy_id: 1518 (pa_color)
+term_taxonomy_id: 1519 (pa_color)
+term_taxonomy_id: 1520 (pa_color)
+term_taxonomy_id: 1521 (pa_color)
+term_taxonomy_id: 1522 (pa_color)
+term_taxonomy_id: 1523 (pa_color)
+term_taxonomy_id: 1524 (pa_color)
+term_taxonomy_id: 1525 (pa_color)
+term_taxonomy_id: 1526 (pa_color)
+
+
+wp_terms
+-----------------------
+term_id: 1172 (product_cat)
+name: Equipment
+slug: equipment
+term_grpoup: 0
+
+term_id: 1240 (product_cat)
+name: Urgent Care
+slug: urgent-care
+term_grpoup: 0
+
+term_id: 1144 (product_type)
+name: Variable
+slug: variable
+term_grpoup: 0
+
+term_id: 216 (product_tag)
+name: exam
+slug: exam
+term_grpoup: 0
+
+term_id: 1491 (product_cat)
+name: Primary Care
+slug: primarry-care
+term_grpoup: 0
+
+===============================================================
+
+
+
+SELECT `wp_posts`.`post_title`, `wp_posts`.`ID`
+FROM `wp_term_relationships`
+JOIN `wp_posts`
+ON `wp_term_relationships`.`object_id` = `wp_posts`.`ID`
+WHERE `wp_posts`.`ID` = 31955
+
+------------------------
+
+>>>> This Works
+
+SELECT `wp_posts`.`post_title`, `wp_posts`.`ID`
+FROM `wp_term_relationships`
+JOIN `wp_posts`
+ON `wp_term_relationships`.`object_id` = `wp_posts`.`ID`
+WHERE `wp_term_relationships`.`term_taxonomy_id` = 1172
