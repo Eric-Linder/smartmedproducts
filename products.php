@@ -17,7 +17,7 @@
     <div class="col-9">
     <?php
     $products_functions->create_products_object_with_parameters();
-   if((isset($_GET['page']))){
+   if(isset($_GET['page'])){
        $page = $_GET['page'];
        $products_functions->loop_through_products_object_with_parameters($page);
     }else{

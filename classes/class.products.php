@@ -5,7 +5,8 @@ class products{
     public $products_object;
     public $products_object_with_parameters;
     public $return_products_by_term;
-
+    public $termid;
+    public $page;
     public function __construct(){
         $servername = "localhost";
         $username   = "root";
@@ -114,6 +115,7 @@ class products{
         //  look like this -->  Array([1] => 30 [2] => 30 [3] => 30...);
         foreach ($array_of_page_link_start_values as $key => $value) { 
             $start_at_row = (int)$key * 30;
+            $start_at_row =  $start_at_row-30;
             print('<p>Page '.$key.' Start at row '.$start_at_row .' and stop at row '.$value.'</p>');
         }
         // number of page links to show at any given time
@@ -140,7 +142,7 @@ class products{
 
         print('<table class="table" id="category_terms_table">');
         for($i=0; $i < $num; $i++){
-            print('<tr><td><a href="?termid='.$result[$i]['term_id'].'">'.$result[$i]['name'].'</a></td><td><a href="#"><i class="fa fa-caret-square-o-right" aria-hidden="true"></i></a></td></tr>');
+            print('<tr><td><a href="?termid='.$result[$i]['term_id'].'&page=1">'.$result[$i]['name'].'</a></td><td><a href="#"><i class="fa fa-caret-square-o-right" aria-hidden="true"></i></a></td></tr>');
         }
         print('</table>');
     }
@@ -197,7 +199,7 @@ class products{
 //    }
 
 
-   public function search_by_term_id($termid=0){
+   public function search_by_term_id($termid=0, $page=1){
     $sql = "SELECT `wp_posts`.`post_title`, `wp_posts`.`ID`
     FROM `wp_term_relationships`
     JOIN `wp_posts`
@@ -214,9 +216,43 @@ class products{
     }
    }
 
+   public function search_by_term_and_page_number($termid=0, $page=0){
+       // get the product start-at value
+       $this->page = $page;
+       $this->termid = $termid;
+    $sql = "SELECT `wp_posts`.`post_title`, `wp_posts`.`ID`
+    FROM `wp_term_relationships`
+    JOIN `wp_posts`
+    ON `wp_term_relationships`.`object_id` = `wp_posts`.`ID`
+    WHERE `wp_term_relationships`.`term_taxonomy_id` = :TERMID";
+    $sth = $this->conn->prepare($sql);
+    $sth->bindValue(":TERMID", $termid, PDO::PARAM_INT);
+    $sth->execute();
+    $result = $sth->fetchAll();
+    if($result){
+        // send upstairs
+        $this->return_products_by_term = $result;
+       // return count($this->return_products_by_term);
+    }
+   }
+
+
+public function get_category_name($cat_id=1574){
+    $sql = "SELECT `wp_terms`.`name` FROM `wp_terms` WHERE `term_id` = :CATID";
+    $sth = $this->conn->prepare($sql);
+    $sth->bindValue(":CATID", $cat_id, PDO::PARAM_INT);
+    $sth->execute();
+    $category_name = $sth->fetchColumn();
+    return $category_name;
+}
+
+
    public function return_products_by_term(){
     $return_products_by_term = $this->return_products_by_term;
     $count = count($return_products_by_term);
+
+    $this->pagination_array($return_products_by_term, $page = 1);
+
     if($count > 0){
         $number_of_pages = $count/30;
         $number_of_pages = ceil($number_of_pages);
@@ -226,10 +262,42 @@ class products{
 
        if($this->return_products_by_term){
            for($i=0; $i < $count; $i++){
-            print('<p>'.$return_products_by_term[$i]['post_title'].'</p>');
+            print('<p>['.$i.'] &nbsp;'.$return_products_by_term[$i]['post_title'].'</p>');
            }
        }
    }
+
+   public function return_products_by_term_with_page_number($termid="0", $page="0"){
+    $return_products_by_term = $this->return_products_by_term;
+    $count = count($return_products_by_term);
+    print('<p> Term ID:  '.$this->termid.'</p>');
+   // print('<p> Start at Row:  '.$this->start_at_row.'</p>');
+    print('<p> Count '.$count.'</p>');
+   // $this->pagination_array($return_products_by_term, $page = 1);
+
+    if($count > 0){
+        $number_of_pages = $count/30;
+        $number_of_pages = ceil($number_of_pages);
+        print('<p> Number of pages '.$number_of_pages.'</p>');
+        print('<ul id="pagination_ul">');
+        for($i=1;$i <= $number_of_pages; $i++){
+            print('<li><a href="http://localhost/products/public/search.php?termid='.$this->termid.'&page='.$i.'">'.$i.'</a></li>');
+        }
+        print('</ul>');
+        print('<br class="clear_both"/>');
+        print('<p>--------------------------------------------</p>');
+    }
+
+
+        if($this->return_products_by_term){
+            $start_at_row = (int)$this->page * 30;
+            $start_at_row =  $start_at_row-30;
+            for($i=0; $i < $count; $i++){
+             print('<p>['.$i.'] &nbsp;<a href="#">'.$return_products_by_term[$i]['post_title'].'</a></p>');
+            }
+        }
+   }
+
 
 }
 ?>

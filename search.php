@@ -17,7 +17,9 @@
     <div class="col-9">
     <?php
      if(isset($_GET['termid'])){
-      print('<p>Return items ('.$products_functions->search_by_term_id($_GET['termid']).')</p>');
+       print('<h1>'.$products_functions->get_category_name($_GET['termid']).'</h1>');
+     // print('<p>Return items ('.$products_functions->search_by_term_id($_GET['termid']).')</p>');
+      print('<p>Return items '.$products_functions->search_by_term_and_page_number($_GET['termid'],$_GET['page']).'</p>');
      }else{
        print('<p>No $_GET[termid] Creatd</p>');
      }
@@ -31,7 +33,8 @@
    ?>
       <p>-------------------------------------------</p>
     <?php
-      $products_functions->return_products_by_term();
+     // $products_functions->return_products_by_term();
+      $products_functions->return_products_by_term_with_page_number();
     ?>
 
    <?php
