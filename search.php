@@ -1,3 +1,4 @@
+<?php // error_reporting(E_ERROR); ?>
 <?php include('./classes/class.conn.php');?>
 <?php include('./classes/class.products.php');?>
 <?php include('./includes/header.php');?>
@@ -19,17 +20,11 @@
      if(isset($_GET['termid'])){
        print('<h1>'.$products_functions->get_category_name($_GET['termid']).'</h1>');
      // print('<p>Return items ('.$products_functions->search_by_term_id($_GET['termid']).')</p>');
-      print('<p>Return items '.$products_functions->search_by_term_and_page_number($_GET['termid'],$_GET['page']).'</p>');
+      print('<p>Return items '.$products_functions->search_by_term_and_page_number($_GET['termid'], $_GET['page']).'</p>');
+      // create products object 
      }else{
        print('<p>No $_GET[termid] Creatd</p>');
      }
-  //   $products_functions->create_products_object_with_parameters();
-  //  if((isset($_GET['page']))){
-  //      $page = $_GET['page'];
-  //      $products_functions->loop_through_products_object_with_parameters($page);
-  //   }else{
-  //      $products_functions->loop_through_products_object_with_parameters(1);
-  //   }
    ?>
       <p>-------------------------------------------</p>
     <?php

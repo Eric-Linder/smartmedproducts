@@ -142,10 +142,28 @@ class products{
 
         print('<table class="table" id="category_terms_table">');
         for($i=0; $i < $num; $i++){
-            print('<tr><td><a href="?termid='.$result[$i]['term_id'].'&page=1">'.$result[$i]['name'].'</a></td><td><a href="#"><i class="fa fa-caret-square-o-right" aria-hidden="true"></i></a></td></tr>');
+            // print('<tr><td><a href="search.php?termid='.$result[$i]['term_id'].'&page=1">'.$result[$i]['name'].'</a></td><td><a href="#"><i class="fa fa-caret-square-o-right" aria-hidden="true"></i></a></td></tr>');
+            print('<tr><td><a href="search.php?termid='.$result[$i]['term_id'].'&page=1">'.$result[$i]['name'].'</a></td><td>'.$this->number_of_items_in_category($result[$i]['term_id']).'</td></tr>');
         }
         print('</table>');
     }
+
+    
+    public function number_of_items_in_category($termid){
+        $sql = "SELECT `wp_posts`.`post_title`
+        FROM `wp_term_relationships`
+        JOIN `wp_posts`
+        ON `wp_term_relationships`.`object_id` = `wp_posts`.`ID`
+        WHERE `wp_term_relationships`.`term_taxonomy_id` = :TERMID";
+        $sth = $this->conn->prepare($sql);
+        $sth->bindValue(":TERMID", $termid, PDO::PARAM_INT);
+        $sth->execute();
+        $result = $sth->fetchall();
+        $items_in_category = count($result);
+        return $items_in_category;
+    }
+
+
 
    public function pagination_shift_links($start_at = 1, $end_at=6){
 
@@ -247,25 +265,25 @@ public function get_category_name($cat_id=1574){
 }
 
 
-   public function return_products_by_term(){
-    $return_products_by_term = $this->return_products_by_term;
-    $count = count($return_products_by_term);
+//    public function return_products_by_term(){
+//     $return_products_by_term = $this->return_products_by_term;
+//     $count = count($return_products_by_term);
 
-    $this->pagination_array($return_products_by_term, $page = 1);
+//     $this->pagination_array($return_products_by_term, $page = 1);
 
-    if($count > 0){
-        $number_of_pages = $count/30;
-        $number_of_pages = ceil($number_of_pages);
-        print('<p> Number of pages '.$number_of_pages.'</p>');
-        print('<p>--------------------------------------------</p>');
-    }
+//     if($count > 0){
+//         $number_of_pages = $count/30;
+//         $number_of_pages = ceil($number_of_pages);
+//         print('<p> Number of pages '.$number_of_pages.'</p>');
+//         print('<p>--------------------------------------------</p>');
+//     }
 
-       if($this->return_products_by_term){
-           for($i=0; $i < $count; $i++){
-            print('<p>['.$i.'] &nbsp;'.$return_products_by_term[$i]['post_title'].'</p>');
-           }
-       }
-   }
+//        if($this->return_products_by_term){
+//            for($i=0; $i < $count; $i++){
+//             print('<p>['.$i.'] &nbsp;'.$return_products_by_term[$i]['post_title'].'</p>');
+//            }
+//        }
+//    }
 
    public function return_products_by_term_with_page_number($termid="0", $page="0"){
     $return_products_by_term = $this->return_products_by_term;
@@ -274,6 +292,11 @@ public function get_category_name($cat_id=1574){
    // print('<p> Start at Row:  '.$this->start_at_row.'</p>');
     print('<p> Count '.$count.'</p>');
    // $this->pagination_array($return_products_by_term, $page = 1);
+   if(isset($_GET['page'])){
+    $page = $_GET['page'];
+    $this->page =  $page;
+   }
+   print('<p> Page '.$page.'</p>');
 
     if($count > 0){
         $number_of_pages = $count/30;
@@ -281,21 +304,30 @@ public function get_category_name($cat_id=1574){
         print('<p> Number of pages '.$number_of_pages.'</p>');
         print('<ul id="pagination_ul">');
         for($i=1;$i <= $number_of_pages; $i++){
-            print('<li><a href="http://localhost/products/public/search.php?termid='.$this->termid.'&page='.$i.'">'.$i.'</a></li>');
+            print('<li><a href="search.php?termid='.$this->termid.'&page='.$i.'">'.$i.'</a></li>');
         }
         print('</ul>');
         print('<br class="clear_both"/>');
         print('<p>--------------------------------------------</p>');
     }
 
-
+        
         if($this->return_products_by_term){
+            $count = count($this->return_products_by_term);
             $start_at_row = (int)$this->page * 30;
             $start_at_row =  $start_at_row-30;
-            for($i=0; $i < $count; $i++){
+            $end_at_row = $start_at_row + 30;
+            // dont print rows that do not exist
+            // if remaining page has less than 30
+            // use the count() as $end_at_row
+            if($end_at_row > $count){
+                $end_at_row = $count;
+            }
+            for($i=$start_at_row; $i < $end_at_row ; $i++){
              print('<p>['.$i.'] &nbsp;<a href="#">'.$return_products_by_term[$i]['post_title'].'</a></p>');
             }
         }
+        
    }
 
 
